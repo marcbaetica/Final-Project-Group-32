@@ -1,0 +1,111 @@
+ package JDBC;
+   //import com.mysql.jdbc.PreparedStatement;
+import java.sql.*;
+    //import com.mysql.*;
+    //import org.gjt.mm.mysql.*;
+    public class jdbcQuery {
+           
+            private Connection myConnection;
+            public jdbcQuery(){
+                   
+            }
+            public void Connect(long mac){ 
+                     try {
+                        // The newInstance() call is a work around for some
+                        // broken Java implementations
+                               
+                        Class.forName("com.mysql.jdbc.Driver").newInstance();
+                    } catch (Exception ex) {
+                             System.out.println("SQLException: class.forname:" + ex.getMessage());
+                    }
+                                    //modify these as needed
+                                    String rootUsername = "root";
+                                    String rootPassword = "";
+                                    String connectionDatabase = "jdbc:mysql://localhost:3306/macRulesSchema";
+                                   
+                                    try {
+                                            //attempt to connect to mysql database
+                                            myConnection = DriverManager.getConnection(connectionDatabase, rootUsername, rootPassword);                    
+                                    }
+                                    catch (SQLException ex) {//handel error here
+                                             System.out.println("SQLException: Driver skrewup" + ex.getMessage());
+                                             System.out.println("SQLState: " + ex.getSQLState());
+                                             System.out.println("VendorError: " + ex.getErrorCode());
+                                    }
+                                    
+                   try {
+					this.inputMACs(mac);
+                   } catch (SQLException e) {
+					// TODO Auto-generated catch block
+                	   System.out.println(" Installing mac failed "+ e.getMessage());
+                   }
+            }
+            public void disconnect(){
+                   
+                            try {
+                                    myConnection.close();
+                            } catch (SQLException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                            }
+                   
+            }
+            public Array inputMACs(long mac) throws SQLException{
+                    PreparedStatement update = null;
+                    PreparedStatement check = null;
+                    String checkMAC = "SELECT from macRulesTable where (mac) = ?";
+                    String inputMac = "INSERT into macRulesTable (mac) Value (?)";
+                    check = myConnection.prepareStatement(checkMAC);
+                    check.setLong(1, mac);
+                    if(!check.execute()){
+                    	try{
+                    		update = myConnection.prepareStatement(inputMac);
+                    		update.setLong(1,mac);
+                    		update.executeUpdate();
+                    	}catch (Exception exc) {//handle exceptions here
+                    		System.out.println(" Installing mac failed "+ exc.getMessage());
+                            exc.printStackTrace();
+                    	}
+                    	finally { //cleanup
+                            if (update != null) {
+                                    update.close();
+                            }
+                    	}
+                    }else{
+                    	return(this.Get_MAC_Rules(mac));
+                    }
+            }
+           
+            public Array Get_MAC_Rules(long MAC) throws SQLException {
+                    PreparedStatement myStatement = null;
+                    ResultSet myResultSet = null;
+                    Array Rules = null;
+                    //String dbTable = "macRulesTable";
+                    String SQL = "(SELECT * FROM macRulesTable WHERE MAC = ?)";
+                    try {
+                            myStatement = myConnection.prepareStatement(SQL);//generate statement based on established connection
+                            myStatement.setLong(1,MAC);
+                            //execute bd extract query
+                            myResultSet = (myStatement.executeQuery());
+                            //myResultSet = myStatement.executeQuery("select * from ".concat(dbTable)."WHERE MAC =".concat(MAC));
+                            //process result set to obtain the list of mac addresses with their respective blocked status
+                            //while (myResultSet.next()) {
+                            Rules = myResultSet.getArray("is_nullable"); //still needs up dating for array
+                            //}
+                            //to add INSERT UPDATE  DELETE
+                           
+                    }      
+                    catch (Exception exc) {//handle exceptions here
+                            exc.printStackTrace();
+                    }
+                    finally { //cleanup
+                            if (myResultSet != null) {
+                                    myResultSet.close();
+                            } if (myStatement != null) {
+                                    myStatement.close();
+                            }
+                    }
+                    return(Rules);
+            }
+    }
+

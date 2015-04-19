@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jdbc
+Bundle-SymbolicName: com.mysql.jdbc
+Bundle-Version: 5.1.32
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: library.jar,
+ .
+Bundle-ActivationPolicy: lazy

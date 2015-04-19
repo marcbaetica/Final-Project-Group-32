@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html> 
+<body>
+
+<?php
+//choose fom MySQL database
+mysql_connect('localhost', 'root', '') or die("Connection failed");
+mysql_select_db('sdn_db') or die("Connection failed");
+
+//$sql = "SELECT * FROM macrulestable";
+$sql = "SELECT mac FROM macrulestable";
+$result = mysql_query($sql) or die ("Error in query: $query " . mysql_error()); 
+?>
+
+<?php if (!isset($_POST['limit'])) { ?>
+	<form action="" method="post">MAC:
+<?php echo mysql_num_rows($result); ?>
+
+<select name='mac_choose'> <!--creating drop down menu-->
+<?php while ($row = mysql_fetch_array($result)) { ?>
+	<option value="<?php echo $row['mac'];?>"> <?php echo $row['mac'];?> </option>
+<?php } ?>
+</select>
+
+BW Limitation: <input type="text" name="limit"><br>
+<input type="submit">
+</form>
+
+<?php 
+}else{
+$mac=$_POST['mac_choose'];
+$bw=$_POST['limit'];
+$sql="UPDATE macrulestable SET bw_limit='".$bw."' WHERE mac='".$mac."'"; 
+$result=mysql_query($sql); 
+echo 'DATABASE UPDATED'; 
+} 
+?>
+
+</body>
+</html>

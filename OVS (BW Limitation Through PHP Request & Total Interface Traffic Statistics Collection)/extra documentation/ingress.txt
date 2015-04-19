@@ -1,0 +1,42 @@
+net //for the links
+dpctl show //for the mac addresses
+dump flows //flow tables with IP addresses
+
+s1 ovs-ofctl dump-flows tcp:127.0.0.1:6634
+//dump flows for partiular switch
+
+
+Base commands
+
+OVS is feature rich with different configuration commands, but the majority of your configuration and troubleshooting can be accomplished with the following 4 commands:
+
+    ovs-vsctl : Used for configuring the ovs-vswitchd configuration database (known as ovs-db)
+    ovs-ofctl : A command line tool for monitoring and administering OpenFlow switches
+    ovs-dpctl : Used to administer Open vSwitch datapaths
+    ovs−appctl : Used for querying and controlling Open vSwitch daemons
+
+
+
+mininet> s1 ovs-vsctl set interface s1-eth1 ingress_policing_rate=50000
+mininet> s1 ovs-vsctl set interface s1-eth1 ingress_policing_burst=5000
+mininet> s1 ovs-vsctl set interface s1-eth4 ingress_policing_rate=5000
+mininet> s1 ovs-vsctl set interface s1-eth4 ingress_policing_burst=500
+//setting up the ingress values per interface
+
+
+mininet> s1 ovs-vsctl list interface s1-eth4
+//to see the set up ingress limits
+
+mininet> iperf h1 h2
+*** Iperf: testing TCP bandwidth between h1 and h2
+*** Results: ['56.7 Mbits/sec', '56.8 Mbits/sec']
+mininet> iperf h4 h3
+*** Iperf: testing TCP bandwidth between h4 and h3
+*** Results: ['5.52 Mbits/sec', '5.95 Mbits/sec']
+mininet> iperf h1 h4
+*** Iperf: testing TCP bandwidth between h1 and h4
+waiting for iperf to start up...
+*** Results: ['57.1 Mbits/sec', '57.2 Mbits/sec']
+mininet> iperf h4 h1
+*** Iperf: testing TCP bandwidth between h4 and h1
+*** Results: ['5.57 Mbits/sec', '6.03 Mbits/sec']
